@@ -12,32 +12,17 @@ import type {
 	ColumnType,
 	DBColumn,
 	DBTable,
-	DBTables,
 	DateColumn,
 	JsonColumn,
 	NumberColumn,
 	TextColumn,
 } from '../core/types.js';
-import { type SqliteDB, hasPrimaryKey } from './index.js';
+import { hasPrimaryKey } from './index.js';
 import { isSerializedSQL } from './types.js';
 
 const sqlite = new SQLiteAsyncDialect();
 
 export const SEED_DEV_FILE_NAME = ['seed.ts', 'seed.js', 'seed.mjs', 'seed.mts'];
-
-export async function recreateTables({ db, tables }: { db: SqliteDB; tables: DBTables }) {
-	const setupQueries: SQL[] = [];
-	for (const [name, table] of Object.entries(tables)) {
-		const dropQuery = sql.raw(`DROP TABLE IF EXISTS ${sqlite.escapeName(name)}`);
-		const createQuery = sql.raw(getCreateTableQuery(name, table));
-		const indexQueries = getCreateIndexQueries(name, table);
-		setupQueries.push(dropQuery, createQuery, ...indexQueries.map((s) => sql.raw(s)));
-	}
-	await db.batch([
-		db.run(sql`pragma defer_foreign_keys=true;`),
-		...setupQueries.map((q) => db.run(q)),
-	]);
-}
 
 export function getDropTableIfExistsQuery(tableName: string) {
 	return `DROP TABLE IF EXISTS ${sqlite.escapeName(tableName)}`;
