@@ -1,4 +1,3 @@
-import { LibsqlError } from '@libsql/client';
 import { type SQL, sql } from 'drizzle-orm';
 import { SQLiteAsyncDialect } from 'drizzle-orm/sqlite-core';
 import { bold } from 'kleur/colors';
@@ -7,7 +6,6 @@ import {
 	FOREIGN_KEY_REFERENCES_EMPTY_ERROR,
 	FOREIGN_KEY_REFERENCES_LENGTH_ERROR,
 	REFERENCE_DNE_ERROR,
-	SEED_ERROR,
 } from '../core/errors.js';
 import type {
 	BooleanColumn,
@@ -26,31 +24,6 @@ import { isSerializedSQL } from './types.js';
 const sqlite = new SQLiteAsyncDialect();
 
 export const SEED_DEV_FILE_NAME = ['seed.ts', 'seed.js', 'seed.mjs', 'seed.mts'];
-
-export async function seedLocal({
-	db,
-	tables,
-	// Glob all potential seed files to catch renames and deletions.
-	fileGlob,
-}: {
-	db: SqliteDB;
-	tables: DBTables;
-	fileGlob: Record<string, () => Promise<void>>;
-}) {
-	await recreateTables({ db, tables });
-	for (const fileName of SEED_DEV_FILE_NAME) {
-		const key = Object.keys(fileGlob).find((f) => f.endsWith(fileName));
-		if (key) {
-			await fileGlob[key]().catch((e) => {
-				if (e instanceof LibsqlError) {
-					throw new Error(SEED_ERROR(e.message));
-				}
-				throw e;
-			});
-			return;
-		}
-	}
-}
 
 export async function recreateTables({ db, tables }: { db: SqliteDB; tables: DBTables }) {
 	const setupQueries: SQL[] = [];
