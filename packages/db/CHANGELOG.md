@@ -1,5 +1,11 @@
 # @astrojs/db
 
+## 0.6.6
+
+### Patch Changes
+
+- [#10348](https://github.com/withastro/astro/pull/10348) [`9f422e9bd338c1f6deee8f727143bf801a6b1651`](https://github.com/withastro/astro/commit/9f422e9bd338c1f6deee8f727143bf801a6b1651) Thanks [@matthewp](https://github.com/matthewp)! - Rename `experimentalVersion` to `version`
+
 ## 0.6.5
 
 ### Patch Changes
